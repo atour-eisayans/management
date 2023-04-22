@@ -66,7 +66,7 @@ export class PermissionService {
       const permission = await this.permissionRepository.deleteById(
         permissionId,
       );
-      return permission;
+      return this.permissionMapper.mapEntityToType(permission);
     } catch (error: any) {
       this.logger.error(
         `error while finding a permission. error: ${JSON.stringify(error)}`,
@@ -84,9 +84,12 @@ export class PermissionService {
         category: input?.category ?? permission.category,
         operation: input?.operation ?? permission.operation,
       };
-      await this.permissionRepository.update(permissionId, updateProperties);
+      const updatedEntity = await this.permissionRepository.update(
+        permissionId,
+        updateProperties,
+      );
 
-      return { id: permissionId, ...updateProperties };
+      return this.permissionMapper.mapEntityToType(updatedEntity);
     } catch (error: any) {
       this.logger.error(
         `error while finding a permission. error: ${JSON.stringify(error)}`,

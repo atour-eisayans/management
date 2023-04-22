@@ -1,5 +1,5 @@
 interface IPermissionConstruction {
-  id?: number;
+  id: number;
   category: string;
   operation: string;
   createdAt?: Date;
@@ -7,7 +7,7 @@ interface IPermissionConstruction {
 }
 
 export class PermissionType implements IPermissionConstruction {
-  public id?: number;
+  public id: number;
   public category: string;
   public operation: string;
   public readonly createdAt?: Date;

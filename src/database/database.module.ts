@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { config as dbConfig } from './ormconfig';
-import { RoleEntity } from 'src/role/role.entity';
-import { PermissionEntity } from 'src/permission/permission.entity';
-import { UserEntity } from 'src/user/user.entity';
-import { PermissionRepository } from 'src/permission/permission.repository';
+import { RoleEntity } from '../role/role.entity';
+import { PermissionEntity } from '../permission/permission.entity';
+import { UserEntity } from '../user/user.entity';
+import { PermissionRepository } from '../permission/permission.repository';
+import { RoleRepository } from '../role/role.repository';
 
 @Module({
   imports: [
@@ -16,7 +17,11 @@ import { PermissionRepository } from 'src/permission/permission.repository';
       provide: 'PermissionRepositoryInterface',
       useClass: PermissionRepository,
     },
+    {
+      provide: 'RoleRepositoryInterface',
+      useClass: RoleRepository,
+    },
   ],
-  exports: ['PermissionRepositoryInterface'],
+  exports: ['PermissionRepositoryInterface', 'RoleRepositoryInterface'],
 })
 export class DatabaseModule {}

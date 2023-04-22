@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { PermissionEntity } from './permission.entity';
 import { PermissionRepositoryInterface } from './interfaces/permission.repository.interface';
 import { CreatePermissionDto } from './dto/input/create.dto';
@@ -11,6 +11,7 @@ export class PermissionRepository implements PermissionRepositoryInterface {
   constructor(
     @InjectRepository(PermissionEntity)
     private permissionRepository: Repository<PermissionEntity>,
+    private dataSource: DataSource,
   ) {}
 
   async findAll(offset: number, limit: number): Promise<PermissionEntity[]> {
@@ -51,13 +52,15 @@ export class PermissionRepository implements PermissionRepositoryInterface {
 
   async deleteById(permissionId: number): Promise<PermissionEntity | null> {
     try {
-      const permission = await this.permissionRepository.findOneByOrFail({
+      await this.permissionRepository.findOneByOrFail({
         id: permissionId,
       });
 
-      await this.permissionRepository.delete(permissionId);
+      const permissionEntity = await this.permissionRepository.delete({
+        id: permissionId,
+      });
 
-      return permission;
+      return permissionEntity.raw ?? null;
     } catch (error) {
       throw new DatabaseException(error);
     }
@@ -66,11 +69,19 @@ export class PermissionRepository implements PermissionRepositoryInterface {
   async update(
     permissionId: number,
     input: CreatePermissionDto,
-  ): Promise<boolean> {
+  ): Promise<PermissionEntity | null> {
     try {
-      await this.permissionRepository.update({ id: permissionId }, input);
+      const result = await this.dataSource
+        .createQueryBuilder()
+        .update(PermissionEntity)
+        .set({ category: input.category, operation: input.operation })
+        .where('id = :permissionId', { permissionId })
+        .returning('*')
+        .execute();
 
-      return true;
+      console.log({ result });
+
+      return result.raw ? (result.raw as PermissionEntity) : null;
     } catch (error) {
       throw new DatabaseException(error);
     }

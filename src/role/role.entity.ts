@@ -23,7 +23,10 @@ export class RoleEntity {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @ManyToMany(() => PermissionEntity)
+  @ManyToMany(() => PermissionEntity, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   @JoinTable()
   permissions: PermissionEntity[];
 }

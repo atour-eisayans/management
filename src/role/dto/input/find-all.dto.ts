@@ -1,9 +1,9 @@
 import { IsNumberString, IsOptional } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
-export class FindAllPermissionsDTO {
+export class FindAllRolesDto {
   @ApiPropertyOptional({
-    description: 'Count of the received permissions',
+    description: 'Count of the received roles',
   })
   @IsNumberString()
   @IsOptional()

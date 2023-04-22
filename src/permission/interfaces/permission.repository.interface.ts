@@ -6,5 +6,8 @@ export interface PermissionRepositoryInterface {
   create(input: CreatePermissionDto): Promise<PermissionEntity>;
   findById(permissionId: number): Promise<PermissionEntity | null>;
   deleteById(permissionId: number): Promise<PermissionEntity | null>;
-  update(permissionId: number, input: CreatePermissionDto): Promise<boolean>;
+  update(
+    permissionId: number,
+    input: CreatePermissionDto,
+  ): Promise<PermissionEntity | null>;
 }
