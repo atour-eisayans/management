@@ -1,9 +1,10 @@
-import { Injectable, Inject, Logger } from '@nestjs/common';
+import { Injectable, Inject, Logger, NotFoundException } from '@nestjs/common';
 import { PermissionRepositoryInterface } from './interfaces/permission.repository.interface';
 import { PermissionMapper } from './permission.mapper';
 import { DatabaseException } from '../exceptions/database.exception';
 import { CreatePermissionDto } from './dto/input/create.dto';
 import { UpdatePermissionDto } from './dto/input/update.dto';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class PermissionService {
@@ -25,9 +26,7 @@ export class PermissionService {
       this.logger.error(
         `error while finding all permissions. error: ${JSON.stringify(error)}`,
       );
-      if (error instanceof DatabaseException) {
-        throw error;
-      }
+      throw error;
     }
   }
 
@@ -41,9 +40,7 @@ export class PermissionService {
       this.logger.error(
         `error while creating permission. error: ${JSON.stringify(error)}`,
       );
-      if (error instanceof DatabaseException) {
-        throw error;
-      }
+      throw error;
     }
   }
 
@@ -55,9 +52,7 @@ export class PermissionService {
       this.logger.error(
         `error while finding a permission. error: ${JSON.stringify(error)}`,
       );
-      if (error instanceof DatabaseException) {
-        throw error;
-      }
+      throw error;
     }
   }
 
@@ -66,27 +61,31 @@ export class PermissionService {
       const permission = await this.permissionRepository.deleteById(
         permissionId,
       );
+
+      if (!permission) {
+        throw new NotFoundException('Permission not found');
+      }
+
       return this.permissionMapper.mapEntityToType(permission);
     } catch (error: any) {
       this.logger.error(
         `error while finding a permission. error: ${JSON.stringify(error)}`,
       );
-      if (error instanceof DatabaseException) {
-        throw error;
-      }
+      throw error;
     }
   }
 
   async update(permissionId: number, input: UpdatePermissionDto) {
     try {
       const permission = await this.permissionRepository.findById(permissionId);
-      const updateProperties: CreatePermissionDto = {
-        category: input?.category ?? permission.category,
-        operation: input?.operation ?? permission.operation,
-      };
+
+      if (!permission) {
+        throw new NotFoundError('Permission not found');
+      }
+
       const updatedEntity = await this.permissionRepository.update(
         permissionId,
-        updateProperties,
+        input,
       );
 
       return this.permissionMapper.mapEntityToType(updatedEntity);

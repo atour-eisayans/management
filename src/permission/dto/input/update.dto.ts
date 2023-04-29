@@ -1,10 +1,7 @@
 import { IsEnum, IsOptional } from 'class-validator';
 import { CreatePermissionDto } from './create.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  CategoriesEnum,
-  OperationsEnum,
-} from '../../../enums/permissions.enum';
+import { CategoriesEnum, OperationsEnum } from '../../enums/permissions.enum';
 
 type UpdateDto = Partial<Pick<CreatePermissionDto, 'category' | 'operation'>>;
 

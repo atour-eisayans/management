@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { RoleEntity } from './role.entity';
 import { Repository } from 'typeorm';
 import { DatabaseException } from '../exceptions/database.exception';
+import { UpdateRoleDto } from './dto/input/update.dto';
 
 @Injectable()
 export class RoleRepository implements RoleRepositoryInterface {
@@ -49,9 +50,6 @@ export class RoleRepository implements RoleRepositoryInterface {
 
   async deleteById(roleId: number): Promise<RoleEntity | null> {
     try {
-      await this.roleRepository.findOneByOrFail({ id: roleId });
-
-      // const roleEntity = await this.roleRepository.delete({ id: roleId });
       const roleEntity = await this.roleRepository
         .createQueryBuilder('roles')
         .delete()
@@ -67,10 +65,10 @@ export class RoleRepository implements RoleRepositoryInterface {
 
   async update(
     roleId: number,
-    input: CreateRoleDto,
+    input: UpdateRoleDto,
   ): Promise<RoleEntity | null> {
     try {
-      const role = <RoleEntity>{
+      const role = <Partial<RoleEntity>>{
         ...input,
         id: roleId,
       };
@@ -79,7 +77,6 @@ export class RoleRepository implements RoleRepositoryInterface {
 
       return result ?? null;
     } catch (error: any) {
-      console.log(error);
       throw new DatabaseException(error);
     }
   }

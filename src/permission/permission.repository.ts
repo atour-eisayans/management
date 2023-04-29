@@ -5,6 +5,7 @@ import { PermissionEntity } from './permission.entity';
 import { PermissionRepositoryInterface } from './interfaces/permission.repository.interface';
 import { CreatePermissionDto } from './dto/input/create.dto';
 import { DatabaseException } from '../exceptions/database.exception';
+import { UpdatePermissionDto } from './dto/input/update.dto';
 
 @Injectable()
 export class PermissionRepository implements PermissionRepositoryInterface {
@@ -68,18 +69,16 @@ export class PermissionRepository implements PermissionRepositoryInterface {
 
   async update(
     permissionId: number,
-    input: CreatePermissionDto,
+    input: UpdatePermissionDto,
   ): Promise<PermissionEntity | null> {
     try {
       const result = await this.dataSource
         .createQueryBuilder()
         .update(PermissionEntity)
-        .set({ category: input.category, operation: input.operation })
+        .set({ ...input })
         .where('id = :permissionId', { permissionId })
         .returning('*')
         .execute();
-
-      console.log({ result });
 
       return result.raw ? (result.raw as PermissionEntity) : null;
     } catch (error) {

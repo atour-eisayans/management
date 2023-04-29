@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { CategoriesEnum, OperationsEnum } from '../enums/permissions.enum';
+import { CategoriesEnum, OperationsEnum } from './enums/permissions.enum';
 
 @Entity({ name: 'permissions' })
 @Index(['category', 'operation'], { unique: true })

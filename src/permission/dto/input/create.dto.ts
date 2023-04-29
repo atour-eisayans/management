@@ -1,9 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, MaxLength } from 'class-validator';
-import {
-  CategoriesEnum,
-  OperationsEnum,
-} from '../../../enums/permissions.enum';
+import { CategoriesEnum, OperationsEnum } from '../../enums/permissions.enum';
 
 export class CreatePermissionDto {
   @ApiProperty({

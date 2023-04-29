@@ -1,4 +1,5 @@
 import { CreatePermissionDto } from '../dto/input/create.dto';
+import { UpdatePermissionDto } from '../dto/input/update.dto';
 import { PermissionEntity } from '../permission.entity';
 
 export interface PermissionRepositoryInterface {
@@ -8,6 +9,6 @@ export interface PermissionRepositoryInterface {
   deleteById(permissionId: number): Promise<PermissionEntity | null>;
   update(
     permissionId: number,
-    input: CreatePermissionDto,
+    input: UpdatePermissionDto,
   ): Promise<PermissionEntity | null>;
 }

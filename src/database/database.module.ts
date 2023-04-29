@@ -6,6 +6,7 @@ import { PermissionEntity } from '../permission/permission.entity';
 import { UserEntity } from '../user/user.entity';
 import { PermissionRepository } from '../permission/permission.repository';
 import { RoleRepository } from '../role/role.repository';
+import { UserRepository } from '../user/user.repository';
 
 @Module({
   imports: [
@@ -21,7 +22,15 @@ import { RoleRepository } from '../role/role.repository';
       provide: 'RoleRepositoryInterface',
       useClass: RoleRepository,
     },
+    {
+      provide: 'UserRepositoryInterface',
+      useClass: UserRepository,
+    },
   ],
-  exports: ['PermissionRepositoryInterface', 'RoleRepositoryInterface'],
+  exports: [
+    'PermissionRepositoryInterface',
+    'RoleRepositoryInterface',
+    'UserRepositoryInterface',
+  ],
 })
 export class DatabaseModule {}

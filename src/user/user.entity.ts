@@ -21,13 +21,16 @@ export class UserEntity {
   @Column({ unique: true })
   email: string;
 
-  @Column({ unique: true, name: 'instagram_username' })
-  instagramUsername: string;
-
   @Column()
   password: string;
 
-  @Column()
+  @Column({ unique: true, name: 'instagram_username' })
+  instagramUsername: string;
+
+  @Column({ name: 'instagram_password' })
+  instagramPassword: string;
+
+  @Column({ nullable: true })
   phone: string;
 
   @CreateDateColumn({ name: 'created_at' })

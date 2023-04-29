@@ -3,10 +3,8 @@ import { RoleRepositoryInterface } from './interfaces/role.repository.interface'
 import { RoleMapper } from './role.mapper';
 import { CreateRoleDto } from './dto/input/create.dto';
 import { RoleType } from './role.type';
-import { DatabaseException } from '../exceptions/database.exception';
 import { UpdateRoleDto } from './dto/input/update.dto';
 import { PermissionMapper } from '../permission/permission.mapper';
-import { PermissionType } from '../permission/permission.type';
 
 @Injectable()
 export class RoleService {
@@ -25,14 +23,12 @@ export class RoleService {
     try {
       const role = await this.roleRepository.create(input);
 
-      return role;
+      return this.roleMapper.mapEntityToType(role);
     } catch (error) {
       this.logger.error(
-        `error while finding all permissions. error: ${JSON.stringify(error)}`,
+        `error while creating roles. error: ${JSON.stringify(error)}`,
       );
-      if (error instanceof DatabaseException) {
-        throw error;
-      }
+      throw error;
     }
   }
 
@@ -40,14 +36,12 @@ export class RoleService {
     try {
       const role = await this.roleRepository.findById(roleId);
 
-      return role;
+      return this.roleMapper.mapEntityToType(role);
     } catch (error) {
       this.logger.error(
         `error while finding all permissions. error: ${JSON.stringify(error)}`,
       );
-      if (error instanceof DatabaseException) {
-        throw error;
-      }
+      throw error;
     }
   }
 
@@ -56,14 +50,12 @@ export class RoleService {
       const offset = (page - 1) * limit;
       const roles = await this.roleRepository.findAll(offset, limit);
 
-      return roles;
+      return roles.map((role) => this.roleMapper.mapEntityToType(role));
     } catch (error) {
       this.logger.error(
         `error while finding all permissions. error: ${JSON.stringify(error)}`,
       );
-      if (error instanceof DatabaseException) {
-        throw error;
-      }
+      throw error;
     }
   }
 
@@ -71,48 +63,35 @@ export class RoleService {
     try {
       const role = await this.roleRepository.deleteById(roleId);
 
-      return role;
+      if (!role) {
+        throw new NotFoundException('Role not found');
+      }
+
+      return this.roleMapper.mapEntityToType(role);
     } catch (error) {
       this.logger.error(
         `error while finding all permissions. error: ${JSON.stringify(error)}`,
       );
-      if (error instanceof DatabaseException) {
-        throw error;
-      }
+      throw error;
     }
   }
 
   async update(roleId: number, input: UpdateRoleDto): Promise<RoleType | null> {
     try {
-      console.log({ input });
       const role = await this.roleRepository.findById(roleId);
 
       if (!role) {
         throw new NotFoundException('Role not found');
       }
 
-      const updatedProperties: CreateRoleDto = {
-        title: input?.title ?? role.title,
-        permissions:
-          input?.permissions ??
-          role.permissions.map((permission) =>
-            this.permissionMapper.mapEntityToType(permission),
-          ),
-      };
-
-      const updatedEntity = await this.roleRepository.update(
-        roleId,
-        updatedProperties,
-      );
+      const updatedEntity = await this.roleRepository.update(roleId, input);
 
       return updatedEntity;
     } catch (error) {
       this.logger.error(
-        `error while finding all permissions. error: ${JSON.stringify(error)}`,
+        `error while updating role. error: ${JSON.stringify(error)}`,
       );
-      if (error instanceof DatabaseException) {
-        throw error;
-      }
+      throw error;
     }
   }
 }
